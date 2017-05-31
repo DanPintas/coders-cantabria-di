@@ -1,0 +1,69 @@
+Inyección de dependencias para dummies
+-------------------------------------------------
+MAL
+
+private X x = new X();
+
+public Obj(){
+  x = new X();
+}
+
+-------------------------------------------------
+BIEN
+@Inject
+private X x;
+
+public Obj(X x){
+  this.x = x;
+}
+
+public void setX(X x) {
+  this.x = x;
+}
+
+=================================================
+¿Por qué DI?
+
+Muchos de los beneficios asociados a la ID son derivados del diseño por contrato
+Dependencia débil: evita enlaces fuertes entre clases
+Consistencia: modifica el comportamiento del código en menos puntos, minimizando oportunidades de error
+
+Mantenibilidad: mayor agilidad ante cambios de comportamiento
+Testing: facilidad para cambiar implementaciones, permitiendo mocks
+Reusablilidad: la debilidad de dependencias favorece que un componente pueda ser reutilizado
+Legibilidad: se previene el anidado de clases, haciendo más visible el árbol de dependencias
+=================================================
+¿Por qué (o por qué no) Spring?
+
+Tamaño 
+Spring ha evolucionado mucho más allá de la inyección de dependencias, hasta formar un ecosistema.
+Esto permite integrarse fácilmente con otras muchas librerías para una gran variedad de casos de uso, 
+pero tiende a inflar el tamaño de las aplicaciones.
+
+Configuración
+Spring puede configurarse manual o automáticamente.
+El modo manual es mantenible, pero verboso (heredado de la configuración por XML).
+El modo automático, el común en Spring, es dado a la magia: 
+implementaciones y anotaciones que funcionan,pero cuyo comportamiento no comprendemos ni controlamos.
+Además, el modo automático de Spring es contraindicado para proyectos grandes.
+Se pueden combinar ambas configuraciones, pero el resultado es dado a complicaciones durante desarrollo.
+
+XML
+Originalmente, Spring se configura mediante XML, lo que por compatibilidad nos deja varios "regalos":
+La configuración Java tiende a tener un mapeo 1 a 1 con el XML
+Los beans se identifican por un String y no por clase
+
+Estándar
+A pesar de ser un gran contribuyente a la inyección de dependencias, 
+va a contracorriente inyectando singletons por defecto (ver JSR-330)
+
+Métodos de inyección
+La inyección de dependencias de Spring hace un uso intensivo del proxying, 
+especialmente cuando se usan anotaciones de aspectos (@Transactional),
+y lleva la mayor parte de la lógica a la ejecución, dificultando prevenir fallos en la DI
+
+Comparación
+						Spring		Guice		Dagger
+Tamaño dependencia 		1,1MB		303KB		350(51+299)KB
+Soporte AOP				X			X			
+Punto de inyección		Ejecución	Ejecución	Compilación
